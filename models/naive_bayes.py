@@ -18,10 +18,10 @@ class NaiveBayes():
         return self
 
     def predict(self, X):
-        
-
-
-
-
-
-
+        log_probs_1 = X * np.log(self.prob_word_given_1) + (1 - X) * np.log(1 - self.prob_word_given_1)
+        class1_scores = np.sum(log_probs_1, axis = 1)
+        class1_scores = class1_scores + np.log(self.phi)
+        log_probs_0 = X * np.log(self.prob_word_given_0) + (1 - X) * np.log(1 - self.prob_word_given_0)
+        class0_scores = np.sum(log_probs_0, axis = 1)
+        class0_scores = class0_scores + np.log(1 - self.phi)
+        return (class1_scores > class0_scores).astype(int)
