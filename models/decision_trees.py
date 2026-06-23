@@ -7,10 +7,14 @@ def gini(y):
     p = counts / len(y)
     return 1 - np.sum(p**2)
 
+def weighted_impurity(y_left, y_right):
+    n = len(y_left) + len(y_right)
+    return (len(y_left)/n) * gini(y_left) + (len(y_right/n)) * gini(y_right)
+
 def majority_class(y):
     return np.bincount(y).argmax() 
 
-def candidate_threshold(col):
+def candidate_thresholds(col):
     vals = np.unique(col) # puts unique values in sorted order
     return (vals[:-1] + vals[1:]) / 2 # midpoint of each consecutive pair (consider [10, 30, 50])
 
@@ -37,16 +41,42 @@ class DecisionTree():
         self.root = self._grow(X, y, depth = 0)
 
     def _grow(self, X, y, depth):
-        if np.unique(y) == 1:
-            return self
-        elif depth >= self.max_depth:
-            return self
-        elif len(y) < self.min_samples_split:
-            return self
-        else:
+        if len(np.unique(y)) == 1:
+            return Node(value = y[0])
+        if self.max_depth is not None and depth >= self.max_depth:
+            return Node(value = majority_class(y))
+        if len(y) < self.min_samples_split:
+            return Node(value = majority_class(y))
+        feature, threshold = self._best_split(X, y)
+        if feature is None:
+            return Node(value = majority_class(y))
+        mask = X[:, feature] < threshold 
+        left = self._grow(X[mask], y[mask], depth + 1)
+        right = self._grow(X[~mask], y[~mask], depth + 1)
+        return Node(feature = feature, threshold = threshold, left = left, right = right)
 
     def _best_split(self, X, y):
-        
+        best = float('inf')
+        bestFeature = None
+        bestThreshold = None
+        for feature in range(X.shape[1]):
+            thresholds = candidate_thresholds(X[:,feature])
+            for threshold in thresholds:
+                mask = X[:, feature] < threshold
+                y_left = y[mask] 
+                y_right = y[~mask]
+                if len(y_left) == 0 or len(y_right) == 0:
+                    continue
+                if (impurity := weighted_impurity(y_left, y_right)) < best:
+                    best = impurity
+                    bestFeature = feature
+                    bestThreshold = threshold
+        return bestFeature, bestThreshold
+                
+                
+
+
+
     
 
     
