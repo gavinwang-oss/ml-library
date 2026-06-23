@@ -28,6 +28,8 @@ class SoftmaxRegression():
         hypothesis = X @ self.weights
         normalizedH = np.exp(hypothesis) / np.sum(np.exp(hypothesis), axis = 1, keepdims = True)
         return np.argmax(normalizedH, axis = 1)
+    
+
 
 
 

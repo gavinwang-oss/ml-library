@@ -12,7 +12,7 @@ class LogisticRegression():
         X = np.hstack((ones, X))
         self.weights = np.zeros(X.shape[1])
         for _ in range(self.n_iters):
-            z = X @ self.weights # z is m x 1
+            z = X @ self.weights 
             hypotheses = 1 / (1 + np.exp(-z))
             self.weights = self.weights + self.learning_rate * (1 / X.shape[0]) * (X.T @ (y - hypotheses))
         return self
