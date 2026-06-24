@@ -9,7 +9,7 @@ def gini(y):
 
 def weighted_impurity(y_left, y_right):
     n = len(y_left) + len(y_right)
-    return (len(y_left)/n) * gini(y_left) + (len(y_right/n)) * gini(y_right)
+    return (len(y_left)/n) * gini(y_left) + (len(y_right)/n) * gini(y_right)
 
 def majority_class(y):
     return np.bincount(y).argmax() 
@@ -72,6 +72,23 @@ class DecisionTree():
                     bestFeature = feature
                     bestThreshold = threshold
         return bestFeature, bestThreshold
+    
+    
+    def predict(self, X):
+        return np.array([self._predict_one(x) for x in X])
+    
+    def _predict_one(self, x):
+        node = self.root
+        while not node.is_leaf():
+            if x[node.feature] < node.threshold:
+                node = node.left
+            else:
+                node = node.right
+        return node.value
+    
+
+
+    
                 
                 
 
