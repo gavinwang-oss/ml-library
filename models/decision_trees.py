@@ -59,7 +59,15 @@ class DecisionTree():
         best = float('inf')
         bestFeature = None
         bestThreshold = None
-        for feature in range(X.shape[1]):
+
+        n_features = X.shape[1] # for ease of random forest implementation
+        if self.max_features is None: 
+            features_to_consider = range(n_features)
+        else:
+            features_to_consider = np.random.choice(n_features, self.max_features, replace = False)
+        
+
+        for feature in features_to_consider:
             thresholds = candidate_thresholds(X[:,feature])
             for threshold in thresholds:
                 mask = X[:, feature] < threshold
